@@ -1,22 +1,25 @@
 <?php
-
-
 require("connect.php");
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
     try {
-        $username = mysqli_real_escape_string($conn, $_POST['businessName']);
+        $businessName = mysqli_real_escape_string($conn, $_POST['businessName']);
         $password = mysqli_real_escape_string($conn, $_POST['password']);
-       
-        // Validate the user
-        $sql = "SELECT * FROM business WHERE BusinessName = '$username' AND Password = '$password'";
+        
+        // Retrieve the hashed password from the database
+        $sql = "SELECT Password FROM business WHERE BusinessName = '$businessName'";
         $result = $conn->query($sql);
-       
+        
         if ($result->num_rows > 0) {
-            echo json_encode(array("success" => true));
-           
+            $row = $result->fetch_assoc();
+            $hashedPassword = $row['Password'];
+
+            // Verify the password
+            if (password_verify($password, $hashedPassword)) {
+                echo json_encode(array("success" => true));
+            } else {
+                echo json_encode(array("success" => false, "message" => "Incorrect username or password"));
+            }
         } else {
             echo json_encode(array("success" => false, "message" => "Incorrect username or password"));
         }

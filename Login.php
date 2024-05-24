@@ -13,10 +13,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $hashed_password = $row['Password'];
+            $email=$row['Email'];
+            $picture=base64_encode($row['ProfilePicture']);
+
+            
 
             
             if (password_verify($password, $hashed_password)) {
-                echo json_encode(array("success" => true, "message" => "Login successful"));
+                
+                echo json_encode(array("success" => true, "message" => "Login successful", "email"=>$email, "picture"=>$picture));
             } else {
                 echo json_encode(array("success" => false, "message" => "Login failed. Please check your credentials."));
             }
