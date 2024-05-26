@@ -8,7 +8,7 @@ if (isset($input['username'])) {
     $email = $input['email'];
     $mobileNumber = $input['mobileNumber'];
 
-    $sql = "UPDATE credentials SET Email='$email', Mobile_Number ='$mobileNumber' WHERE Username='$username'";
+    $sql = "UPDATE credentials SET Email='$email', Mobile_Number='$mobileNumber' WHERE Username='$username'";
 
     if ($conn->query($sql) === TRUE) {
         echo json_encode(["message" => "Record updated successfully"]);
@@ -21,3 +21,4 @@ if (isset($input['username'])) {
 
 $conn->close();
 ?>
+
