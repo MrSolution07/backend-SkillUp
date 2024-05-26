@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Insert the post into the database
-    $sql = "INSERT INTO posts (Username, Content, ImageContent, ImageType) VALUES ('$username', '$content', '$imageContent', '$imageType')";
+    $sql = "INSERT INTO post (Username, Content, ImageContent, ImageType) VALUES ('$username', '$content', '$imageContent', '$imageType')";
 
     if ($conn->query($sql) === TRUE) {
         echo json_encode(array("success" => true, "message" => "Post created successfully"));

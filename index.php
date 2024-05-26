@@ -1,6 +1,5 @@
 <?php
-    // Redirect to Login.php
-    header("Location: Login.php");
-    exit();
+// Redirect to login.php
+header("Location: Login.php");
+exit;
 ?>
-

@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $hashed_pwd = password_hash($password, PASSWORD_DEFAULT);
 
         
-        $stmt = $conn->prepare("INSERT INTO credentials (`Username`, `Email`, `Password`, `Mobile Number`) VALUES (?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO credentials (`Username`, `Email`, `Password`, `Mobile_Number`) VALUES (?, ?, ?, ?)");
         $stmt->bind_param("ssss", $username, $email, $hashed_pwd, $mobile); // Use the hashed password
 
         
