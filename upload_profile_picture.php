@@ -1,6 +1,9 @@
 <?php
 require('connect.php');
-
+// Add CORS headers
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 if (isset($_POST['username']) && isset($_FILES['profilePicture'])) {
     try {
         $username = mysqli_real_escape_string($conn, $_POST['username']);

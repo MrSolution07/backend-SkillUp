@@ -1,5 +1,9 @@
 <?php
 require("connect.php");
+// Add CORS headers
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
@@ -15,10 +19,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $hashed_password = $row['Password'];
             $email=$row['Email'];
             $picture=base64_encode($row['ProfilePicture']);
-
-            
-
-            
             if (password_verify($password, $hashed_password)) {
                 
                 echo json_encode(array("success" => true, "message" => "Login successful", "email"=>$email, "picture"=>$picture));

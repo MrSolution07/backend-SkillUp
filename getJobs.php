@@ -1,8 +1,12 @@
 <?php
 require("connect.php");
+// Add CORS headers
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 // Disable error reporting
-error_reporting(0);
+// error_reporting(0);
 
 $sql = "SELECT jobName, jobDescription, jobImage, BusinessName FROM jobs";
 $result = $conn->query($sql);

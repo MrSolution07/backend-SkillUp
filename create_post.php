@@ -1,32 +1,56 @@
 <?php
 require("connect.php");
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $content = mysqli_real_escape_string($conn, $_POST['content']);
-    $imageContent = null;
-    $imageType = null;
+try {
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $username = $_POST["username"];
+        $content = $_POST["content"];
+        $imageId = null;
 
-    if (isset($_FILES['postImage']) && $_FILES['postImage']['error'] == UPLOAD_ERR_OK) {
-        $imageTmpName = $_FILES['postImage']['tmp_name'];
-        $imageType = $_FILES['postImage']['type'];
-        $imageContent = addslashes(file_get_contents($imageTmpName));
-    }
+        if (isset($_FILES["postImage"])) {
+            $imageContent = file_get_contents($_FILES["postImage"]["tmp_name"]);
+            $imageType = $_FILES["postImage"]["type"];
 
-    // Insert the post into the database
-    $sql = "INSERT INTO post (Username, Content, ImageContent, ImageType) VALUES ('$username', '$content', '$imageContent', '$imageType')";
+            // Insert image data into the images table
+            $stmt = $conn->prepare("INSERT INTO images (ImageContent, ImageType) VALUES (?, ?)");
+            $stmt->bind_param("bs", $imageContent, $imageType);
+            $stmt->send_long_data(0, $imageContent);
+            $stmt->execute();
 
-    if ($conn->query($sql) === TRUE) {
-        echo json_encode(array("success" => true, "message" => "Post created successfully"));
+            if ($stmt->affected_rows > 0) {
+                $imageId = $stmt->insert_id;
+            } else {
+                throw new Exception("Failed to insert image");
+            }
+
+            $stmt->close();
+        }
+
+        // Insert post data into the posts table
+        $stmt = $conn->prepare("INSERT INTO posts (Username, Content, ImageId) VALUES (?, ?, ?)");
+        $stmt->bind_param("ssi", $username, $content, $imageId);
+        $stmt->execute();
+
+        if ($stmt->affected_rows > 0) {
+            echo json_encode(["success" => true, "message" => "Post created successfully"]);
+        } else {
+            throw new Exception("Failed to create post");
+        }
+
+        $stmt->close();
     } else {
-        echo json_encode(array("success" => false, "message" => "Error: " . $conn->error));
+        throw new Exception("Invalid request method");
     }
-} else {
-    echo json_encode(array("success" => false, "message" => "Invalid request method"));
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => $e->getMessage()]);
 }
 
 $conn->close();
