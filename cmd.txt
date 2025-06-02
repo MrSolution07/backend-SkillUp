@@ -1,0 +1,2 @@
+docker buildx build --platform linux/amd64 -t mrsolution07/backend-skillup:latest .
+docker push mrsolution07/backend-skillup:latest
