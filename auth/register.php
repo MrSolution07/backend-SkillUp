@@ -1,5 +1,6 @@
 <?php
-require("connect.php");
+require(__DIR__ . '/../config/database.php');
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
@@ -13,12 +14,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $password = mysqli_real_escape_string($conn, $_POST['password']);
         $mobile = mysqli_real_escape_string($conn, $_POST['mobile']);
 
-        // Hash the password
         $hashed_pwd = password_hash($password, PASSWORD_DEFAULT);
 
         
         $stmt = $conn->prepare("INSERT INTO credentials (`Username`, `Email`, `Password`, `Mobile_Number`) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $username, $email, $hashed_pwd, $mobile); // Use the hashed password
+        $stmt->bind_param("ssss", $username, $email, $hashed_pwd, $mobile);
 
         
         if ($stmt->execute() === TRUE) {

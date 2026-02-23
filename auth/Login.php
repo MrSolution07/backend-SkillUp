@@ -1,6 +1,6 @@
 <?php
-require("connect.php");
-// Add CORS headers
+require(__DIR__ . '/../config/database.php');
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
@@ -10,7 +10,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $username = mysqli_real_escape_string($conn, $_POST['username']);
         $password = mysqli_real_escape_string($conn, $_POST['password']);
 
-        // Retrieve the hashed password from the database
         $sql = "SELECT * FROM credentials WHERE Username = '$username'";
         $result = $conn->query($sql);
 
@@ -36,4 +35,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->close();
 }
 ?>
-

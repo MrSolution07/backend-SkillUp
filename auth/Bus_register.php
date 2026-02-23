@@ -1,6 +1,6 @@
 <?php
-require("connect.php");
-// Add CORS headers
+require(__DIR__ . '/../config/database.php');
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
@@ -38,4 +38,3 @@ $conn->close();
 
 echo json_encode($response);
 ?>
-
