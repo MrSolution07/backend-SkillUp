@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $currentPassword = $_POST['currentPassword'];
         $newPassword = $_POST['newPassword'];
 
-        $query = "SELECT Password FROM credentials WHERE Username = ?";
+        $query = "SELECT Password FROM business WHERE BusinessName = ?";
         $stmt = $conn->prepare($query);
         $stmt->bind_param('s', $username);
 
@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $userData = $result->fetch_assoc();
                 if (password_verify($currentPassword, $userData['Password'])) {
                     $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
-                    $updatePasswordQuery = "UPDATE credentials SET Password = ? WHERE Username = ?";
+                    $updatePasswordQuery = "UPDATE business SET Password = ? WHERE BusinessName = ?";
                     $updatePasswordStmt = $conn->prepare($updatePasswordQuery);
                     $updatePasswordStmt->bind_param('ss', $newPasswordHash, $username);
 
