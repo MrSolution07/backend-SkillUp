@@ -21,10 +21,6 @@ $password   = $env(['MYSQL_PASSWORD','MYSQLPASSWORD'], 'DB_PASSWORD');
 $database   = $env(['MYSQL_DATABASE','MYSQLDATABASE'], 'DB_DATABASE');
 $port       = $env(['MYSQL_PORT','MYSQLPORT'], 'DB_PORT') ?: 3306;
 
-// #region agent log
-error_log('[DEBUG-8eb27b] ' . json_encode(['hypothesisId'=>'E','servername'=>!empty($servername),'render_env_exists'=>file_exists(__DIR__.'/render-env.ini')]));
-// #endregion
-
 // Fallback: render-env.ini (written by docker-entrypoint.sh from Render env vars)
 $renderEnvFile = __DIR__ . '/render-env.ini';
 if ((!$servername || !$username || !$database) && file_exists($renderEnvFile)) {
@@ -59,20 +55,16 @@ if (!$servername || !$username || !$database) {
 }
 
 if (!$servername || !$username || !$database) {
-    // #region agent log
-    error_log('[DEBUG-8eb27b] ' . json_encode([
-        'hypothesisId' => 'B',
-        'before_die' => true,
-        'has_servername' => !empty($servername),
-        'has_username' => !empty($username),
-        'has_database' => !empty($database),
-    ]));
-    // #endregion
     die("No database configuration found. Set MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE on Render, or add a .env file for local/InfinityFree.");
 }
 
-$conn = new mysqli($servername, $username, $password ?: '', $database, (int)$port);
+mysqli_report(MYSQLI_REPORT_OFF);
+$conn = @new mysqli($servername, $username, $password ?: '', $database, (int)$port);
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    $msg = $conn->connect_error;
+    if (strpos($msg, 'getaddrinfo') !== false || strpos($msg, 'No address associated with hostname') !== false) {
+        $msg = 'Database host unreachable. InfinityFree MySQL does not allow remote connections. Use Railway, PlanetScale, or another host that supports remote MySQL.';
+    }
+    die("Connection failed: " . $msg);
 }
 ?>

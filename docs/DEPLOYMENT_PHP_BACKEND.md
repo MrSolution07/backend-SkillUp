@@ -271,6 +271,21 @@ Run the schema in `database/skillup.sql` to create all required tables.
 
 ---
 
+## MySQL for Render (Must Allow Remote Connections)
+
+Since Render runs in the cloud, your database **must** allow remote connections. These options work:
+
+| Provider | Free Tier | Remote MySQL |
+|----------|-----------|--------------|
+| **Railway** | Yes | Yes |
+| **PlanetScale** | Yes | Yes |
+| **db4free.net** | Yes | Yes |
+| **InfinityFree** | Yes | **No** (local only) |
+
+Use Railway or PlanetScale for a quick setup. Create the database, import `database/skillup.sql`, then add the connection vars to Render's Environment.
+
+---
+
 ## InfinityFree (Optional, with Caveats)
 
 InfinityFree offers free PHP + MySQL hosting but has important limitations for API usage.
@@ -284,9 +299,15 @@ InfinityFree offers free PHP + MySQL hosting but has important limitations for A
 
 2. **Best for**: Same-origin setups or direct browser navigation. **Not recommended** for a React SPA calling the API from a different domain.
 
-### Database Configuration (InfinityFree)
+### InfinityFree MySQL: No Remote Connections
 
-If you use InfinityFree, configure `config/database.php` with direct credentials:
+InfinityFree **free hosting** does **not** allow remote MySQL connections. The database is only accessible from PHP scripts on the same InfinityFree server (or phpMyAdmin). If you deploy your PHP backend on Render, Railway, or any other host, it **cannot** connect to InfinityFree MySQL.
+
+**Use a remote-accessible MySQL instead:** Railway, PlanetScale, db4free.net, or similar.
+
+### Database Configuration (InfinityFree, for same-server PHP only)
+
+If you host your PHP on InfinityFree (same server as the DB), configure `config/database.php` with direct credentials:
 
 ```php
 <?php
