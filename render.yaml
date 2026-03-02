@@ -1,0 +1,16 @@
+# Render Blueprint - SkillUp PHP Backend
+# Create MySQL separately: Dashboard > New > MySQL (or use external DB)
+# Then add MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT to env vars
+
+services:
+  - type: web
+    runtime: docker
+    name: skillup-backend
+    region: oregon
+    plan: free
+
+    # Env vars - add these in Render Dashboard after creating MySQL
+    # MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT
+    envVars:
+      - key: MYSQL_PORT
+        value: "3306"

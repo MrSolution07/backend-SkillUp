@@ -185,11 +185,27 @@ After the MySQL instance is running:
 
 1. Enable TCP Proxy on the MySQL service in Render.
 2. Connect with a MySQL client (TablePlus, DBeaver, phpMyAdmin).
-3. Run the schema from `DATABASE_CONFIG/schema.sql` in this project (see [Database Setup](#database-setup) below).
+3. Run the schema from `database/skillup.sql` in this project (see [Database Setup](#database-setup) below).
 
 ### 7. Deploy
 
-Push your changes; Render will build and deploy. Your API will be at `https://your-service-name.onrender.com`.
+**Option A: Blueprint (recommended)**
+
+1. Push this repo to GitHub.
+2. In Render Dashboard: **Blueprint** → **New Blueprint Instance**.
+3. Connect the repo. Render will detect `render.yaml` and create the Web Service.
+4. Add env vars in the Web Service: `MYSQL_HOST`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE`, `MYSQL_PORT` (from your MySQL instance).
+5. Import `database/skillup.sql` into your MySQL database.
+
+**Option B: Manual**
+
+1. Push to GitHub.
+2. **New** → **Web Service** → select repo.
+3. Set **Environment** to **Docker**.
+4. Add env vars (same as above).
+5. Deploy.
+
+Your API will be at `https://your-service-name.onrender.com`.
 
 **Free Tier Notes:**
 - Service spins down after 15 minutes of inactivity.
@@ -232,7 +248,7 @@ require(__DIR__ . '/../config/database.php');
 
 ## Database Setup
 
-Run the schema in `DATABASE_CONFIG/schema.sql` to create all required tables.
+Run the schema in `database/skillup.sql` to create all required tables.
 
 ### Tables
 
@@ -365,7 +381,7 @@ Run the SkillUpZA frontend locally and try:
 
 | Error | Cause | Fix |
 |-------|-------|-----|
-| **CORS policy: No 'Access-Control-Allow-Origin'** | Missing CORS headers | Add `config/cors.php` and require it in all endpoints |
+| **CORS policy: No 'Access-Control-Allow-Origin'** | Missing CORS headers | `config/cors.php` is included; ensure all endpoints require it |
 | **403 Forbidden** | Host blocking requests | Try Render; some free hosts block API/ datacenter traffic |
 | **Empty reply / Connection reset** | Host anti-bot or JS challenge | Switch from InfinityFree to Render |
 | **Connection failed** | Wrong DB credentials | Check `config/database.php` and env vars |
@@ -378,7 +394,7 @@ Run the SkillUpZA frontend locally and try:
 | Step | Action |
 |------|--------|
 | 1 | Use [backend-SkillUp](https://github.com/MrSolution07/backend-SkillUp) or flat `DATABASE_CONFIG` |
-| 2 | Add Dockerfile and CORS config |
+| 2 | Dockerfile, .dockerignore, config/cors.php already in place |
 | 3 | Deploy to Render (recommended) or another host |
-| 4 | Create MySQL and import `DATABASE_CONFIG/schema.sql` |
+| 4 | Create MySQL and import `database/skillup.sql` |
 | 5 | Set `VITE_API_URL` (or base URL) in frontend and rebuild |
