@@ -1,8 +1,9 @@
 <?php
+require('/../confing/cors');
 require(__DIR__ . '/../config/database.php');
 
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-A`llow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -29,10 +30,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             $sql = "INSERT INTO jobs (jobName, jobDescription, jobImage, imageName, imageType, imageSize, BusinessName) 
                     VALUES ('$jobName', '$jobDescription', '$imageContent', '$imageName', '$imageType', '$imageSize', '$businessName')";
-        } else {
+        } else 
+	{
             $sql = "INSERT INTO jobs (jobName, jobDescription, BusinessName) VALUES ('$jobName', '$jobDescription', '$businessName')";
         }
-
+	
         if ($conn->query($sql) === TRUE) {
             echo json_encode(array("success" => true, "message" => "Job listing created successfully"));
         } else {
