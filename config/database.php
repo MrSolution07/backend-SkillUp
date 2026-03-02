@@ -2,28 +2,40 @@
 // Render: uses MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT
 // InfinityFree/Local: uses .env with DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PORT
 
+// Helper: getenv or $_SERVER (Apache often exposes env in $_SERVER)
+$env = function($k) {
+    $v = getenv($k);
+    if ($v !== false && $v !== '') return $v;
+    return $_SERVER[$k] ?? $_SERVER['REDIRECT_' . $k] ?? null;
+};
+
 // #region agent log
-$g = function($k) { $v = getenv($k); return $v === false ? 'NOT_SET' : 'SET'; };
+$renderEnvPath = __DIR__ . '/render-env.ini';
 error_log('[DEBUG-8eb27b] ' . json_encode([
-    'hypothesisId' => 'A',
-    'getenv_MYSQL_HOST' => $g('MYSQL_HOST'),
-    'getenv_MYSQLHOST' => $g('MYSQLHOST'),
-    'getenv_MYSQL_USER' => $g('MYSQL_USER'),
-    'getenv_MYSQLUSER' => $g('MYSQLUSER'),
-    'getenv_MYSQL_DATABASE' => $g('MYSQL_DATABASE'),
-    'getenv_MYSQLDATABASE' => $g('MYSQLDATABASE'),
-    'getenv_MYSQL_PASSWORD' => $g('MYSQL_PASSWORD'),
-    'getenv_MYSQLPASSWORD' => $g('MYSQLPASSWORD'),
-    'env_file_exists' => file_exists(__DIR__ . '/../.env'),
-    'php_sapi' => php_sapi_name(),
+    'hypothesisId' => 'D',
+    'getenv_MYSQL_HOST' => ($env('MYSQL_HOST') || $env('MYSQLHOST')) ? 'SET' : 'NOT_SET',
+    'render_env_exists' => file_exists($renderEnvPath),
 ]));
 // #endregion
 
-$servername = getenv('MYSQL_HOST') ?: getenv('MYSQLHOST');
-$username   = getenv('MYSQL_USER') ?: getenv('MYSQLUSER');
-$password   = getenv('MYSQL_PASSWORD') ?: getenv('MYSQLPASSWORD');
-$database   = getenv('MYSQL_DATABASE') ?: getenv('MYSQLDATABASE');
-$port       = getenv('MYSQL_PORT') ?: getenv('MYSQLPORT') ?: 3306;
+$servername = $env('MYSQL_HOST') ?: $env('MYSQLHOST');
+$username   = $env('MYSQL_USER') ?: $env('MYSQLUSER');
+$password   = $env('MYSQL_PASSWORD') ?: $env('MYSQLPASSWORD');
+$database   = $env('MYSQL_DATABASE') ?: $env('MYSQLDATABASE');
+$port       = $env('MYSQL_PORT') ?: $env('MYSQLPORT') ?: 3306;
+
+// Fallback: render-env.ini (written by docker-entrypoint.sh from Render env vars)
+$renderEnvFile = __DIR__ . '/render-env.ini';
+if ((!$servername || !$username || !$database) && file_exists($renderEnvFile)) {
+    $r = @parse_ini_file($renderEnvFile);
+    if ($r) {
+        $servername = $servername ?: ($r['MYSQL_HOST'] ?? null);
+        $username   = $username   ?: ($r['MYSQL_USER'] ?? null);
+        $password   = $password   ?: ($r['MYSQL_PASSWORD'] ?? null);
+        $database   = $database   ?: ($r['MYSQL_DATABASE'] ?? null);
+        $port       = $port       ?: ($r['MYSQL_PORT'] ?? 3306);
+    }
+}
 
 // Fallback to .env file (InfinityFree, local development)
 if (!$servername || !$username || !$database) {

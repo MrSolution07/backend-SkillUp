@@ -1,4 +1,5 @@
 .env
+config/render-env.ini
 vendor/
 composer.phar
 .DS_Store
