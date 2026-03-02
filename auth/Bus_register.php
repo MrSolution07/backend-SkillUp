@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $password = mysqli_real_escape_string($conn, $_POST['password']);
         $mobile = mysqli_real_escape_string($conn, $_POST['mobile']);
 
-        $hashed_pwd = password_hash($password, PASSWORD_DEFAULT);
+        $hashed_pwd = password_hash($password, PASSWORD_BCRYPT);
 
         $stmt = $conn->prepare("INSERT INTO business (`BusinessName`, `Email`, `Password`, `Mobile_number`) VALUES (?, ?, ?, ?)");
         $stmt->bind_param("ssss", $username, $email, $hashed_pwd, $mobile);

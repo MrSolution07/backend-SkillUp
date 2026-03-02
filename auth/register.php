@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $password = mysqli_real_escape_string($conn, $_POST['password']);
         $mobile = mysqli_real_escape_string($conn, $_POST['mobile']);
 
-        $hashed_pwd = password_hash($password, PASSWORD_DEFAULT);
+        $hashed_pwd = password_hash($password, PASSWORD_BCRYPT);
 
         
         $stmt = $conn->prepare("INSERT INTO credentials (`Username`, `Email`, `Password`, `Mobile_Number`) VALUES (?, ?, ?, ?)");
