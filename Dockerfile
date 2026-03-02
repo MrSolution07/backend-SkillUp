@@ -15,8 +15,7 @@ COPY . .
 # Install Composer dependencies (if composer.json exists)
 RUN if [ -f composer.json ]; then composer install --no-dev --optimize-autoloader --no-interaction 2>/dev/null || true; fi
 
-# Apache configuration - PassEnv so PHP can see Render env vars
-RUN echo 'PassEnv MYSQL_HOST MYSQLHOST MYSQL_USER MYSQLUSER MYSQL_PASSWORD MYSQLPASSWORD MYSQL_DATABASE MYSQLDATABASE MYSQL_PORT MYSQLPORT' >> /etc/apache2/apache2.conf
+# Apache configuration
 RUN a2enmod rewrite
 RUN echo "DirectoryIndex index.php index.html" > /etc/apache2/mods-enabled/dir.conf
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
