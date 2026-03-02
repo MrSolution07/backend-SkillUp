@@ -2,27 +2,28 @@
 // Render: uses MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT
 // InfinityFree/Local: uses .env with DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PORT
 
-// Helper: getenv or $_SERVER (Apache often exposes env in $_SERVER)
-$env = function($k) {
-    $v = getenv($k);
+// Helper: getenv or $_SERVER; supports both MYSQL_* and DB_* (Render/env naming)
+$env = function($mysqlKeys, $dbKey) {
+    foreach ((array)$mysqlKeys as $k) {
+        $v = getenv($k);
+        if ($v !== false && $v !== '') return $v;
+        $v = $_SERVER[$k] ?? $_SERVER['REDIRECT_' . $k] ?? null;
+        if ($v !== null && $v !== '') return $v;
+    }
+    $v = getenv($dbKey);
     if ($v !== false && $v !== '') return $v;
-    return $_SERVER[$k] ?? $_SERVER['REDIRECT_' . $k] ?? null;
+    return $_SERVER[$dbKey] ?? $_SERVER['REDIRECT_' . $dbKey] ?? null;
 };
 
-// #region agent log
-$renderEnvPath = __DIR__ . '/render-env.ini';
-error_log('[DEBUG-8eb27b] ' . json_encode([
-    'hypothesisId' => 'D',
-    'getenv_MYSQL_HOST' => ($env('MYSQL_HOST') || $env('MYSQLHOST')) ? 'SET' : 'NOT_SET',
-    'render_env_exists' => file_exists($renderEnvPath),
-]));
-// #endregion
+$servername = $env(['MYSQL_HOST','MYSQLHOST'], 'DB_HOST');
+$username   = $env(['MYSQL_USER','MYSQLUSER'], 'DB_USERNAME');
+$password   = $env(['MYSQL_PASSWORD','MYSQLPASSWORD'], 'DB_PASSWORD');
+$database   = $env(['MYSQL_DATABASE','MYSQLDATABASE'], 'DB_DATABASE');
+$port       = $env(['MYSQL_PORT','MYSQLPORT'], 'DB_PORT') ?: 3306;
 
-$servername = $env('MYSQL_HOST') ?: $env('MYSQLHOST');
-$username   = $env('MYSQL_USER') ?: $env('MYSQLUSER');
-$password   = $env('MYSQL_PASSWORD') ?: $env('MYSQLPASSWORD');
-$database   = $env('MYSQL_DATABASE') ?: $env('MYSQLDATABASE');
-$port       = $env('MYSQL_PORT') ?: $env('MYSQLPORT') ?: 3306;
+// #region agent log
+error_log('[DEBUG-8eb27b] ' . json_encode(['hypothesisId'=>'E','servername'=>!empty($servername),'render_env_exists'=>file_exists(__DIR__.'/render-env.ini')]));
+// #endregion
 
 // Fallback: render-env.ini (written by docker-entrypoint.sh from Render env vars)
 $renderEnvFile = __DIR__ . '/render-env.ini';
