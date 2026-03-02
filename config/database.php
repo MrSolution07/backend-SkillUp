@@ -2,6 +2,23 @@
 // Render: uses MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT
 // InfinityFree/Local: uses .env with DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PORT
 
+// #region agent log
+$g = function($k) { $v = getenv($k); return $v === false ? 'NOT_SET' : 'SET'; };
+error_log('[DEBUG-8eb27b] ' . json_encode([
+    'hypothesisId' => 'A',
+    'getenv_MYSQL_HOST' => $g('MYSQL_HOST'),
+    'getenv_MYSQLHOST' => $g('MYSQLHOST'),
+    'getenv_MYSQL_USER' => $g('MYSQL_USER'),
+    'getenv_MYSQLUSER' => $g('MYSQLUSER'),
+    'getenv_MYSQL_DATABASE' => $g('MYSQL_DATABASE'),
+    'getenv_MYSQLDATABASE' => $g('MYSQLDATABASE'),
+    'getenv_MYSQL_PASSWORD' => $g('MYSQL_PASSWORD'),
+    'getenv_MYSQLPASSWORD' => $g('MYSQLPASSWORD'),
+    'env_file_exists' => file_exists(__DIR__ . '/../.env'),
+    'php_sapi' => php_sapi_name(),
+]));
+// #endregion
+
 $servername = getenv('MYSQL_HOST') ?: getenv('MYSQLHOST');
 $username   = getenv('MYSQL_USER') ?: getenv('MYSQLUSER');
 $password   = getenv('MYSQL_PASSWORD') ?: getenv('MYSQLPASSWORD');
@@ -29,6 +46,15 @@ if (!$servername || !$username || !$database) {
 }
 
 if (!$servername || !$username || !$database) {
+    // #region agent log
+    error_log('[DEBUG-8eb27b] ' . json_encode([
+        'hypothesisId' => 'B',
+        'before_die' => true,
+        'has_servername' => !empty($servername),
+        'has_username' => !empty($username),
+        'has_database' => !empty($database),
+    ]));
+    // #endregion
     die("No database configuration found. Set MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE on Render, or add a .env file for local/InfinityFree.");
 }
 
