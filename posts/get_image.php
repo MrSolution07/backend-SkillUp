@@ -1,4 +1,5 @@
 <?php
+require(__DIR__ . '/../config/cors.php');
 require(__DIR__ . '/../config/database.php');
 
 ini_set('display_errors', 1);

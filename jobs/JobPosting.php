@@ -1,9 +1,6 @@
 <?php
-require('/../confing/cors');
+require(__DIR__ . '/../config/cors.php');
 require(__DIR__ . '/../config/database.php');
-
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-A`llow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
