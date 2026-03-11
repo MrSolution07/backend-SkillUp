@@ -1,8 +1,4 @@
 <?php
-// Render: uses MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT
-// InfinityFree/Local: uses .env with DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PORT
-
-// Helper: getenv or $_SERVER; supports both MYSQL_* and DB_* (Render/env naming)
 $env = function($mysqlKeys, $dbKey) {
     foreach ((array)$mysqlKeys as $k) {
         $v = getenv($k);
